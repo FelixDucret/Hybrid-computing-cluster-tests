@@ -1,0 +1,1 @@
+To execute the executable file, please type "./test".
