@@ -1,17 +1,16 @@
 #include <iostream>
-#include <vector>
-#include <cmath>
-
+#include <string>
+using namespace std;
 
 int main(void)
 {
-	std::vector<float> vector1(3,M_PI);
-	std::vector<float> vector2(3,M_E);
+	string mot1("abc");
+	string mot2("bcd");
 	bool test_unit = true;
 	
-	for(int i=0;i<vector1.size();++i)
+	for(int i=0;i<mot1.size();++i)
 	{
-		if(vector1[i]!=vector2[i])
+		if(mot1[i]!=mot2[i])
 		{
 			test_unit=false;
 			break;
