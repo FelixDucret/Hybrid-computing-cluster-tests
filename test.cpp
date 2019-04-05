@@ -1,23 +1,23 @@
 #include <iostream>
-#include <string>
+#include <cmath>
+
+
 using namespace std;
+
+template <typename T>
+T maximum(const T& a, const T& b)
+{
+	if(a>b)
+		return a;
+	else
+		return b;
+}
 
 int main(void)
 {
-	string mot1("abc");
-	string mot2("bcd");
-	bool test_unit = true;
-	
-	for(int i=0;i<mot1.size();++i)
-	{
-		if(mot1[i]!=mot2[i])
-		{
-			test_unit=false;
-			break;
-		}
-	}
-	
-	std::cout << test_unit << std::endl;
+	float a = M_PI;
+	float b = M_E;
+	std::cout << maximum(a,b) << std::endl;
 
 }//main
 
