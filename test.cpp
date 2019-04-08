@@ -55,7 +55,7 @@ static error_t parse_option(int key, char *arg, struct argp_state *state)
 
 void print_args(struct arguments *p_arguments)
 {
-   cout << "Size = " << p_arguments->size << endl << endl << endl;
+   cout << "Size = " << p_arguments->size << endl << endl ;
   ;
 }//print_args
 
@@ -86,7 +86,7 @@ int main(int argc, char ** argv)
 {
         //CLI arguments
         struct arguments arguments;
-        arguments.size=20;
+        arguments.size=0;
 
         cout << "command line option values:" << endl;
         print_args(&arguments);
@@ -96,6 +96,7 @@ int main(int argc, char ** argv)
 
 
         int L=arguments.size;
+        //cout << "L : " << L << endl;
         vector<int> vec1(5,2);
         vector<int> vec2(5,3);
 
