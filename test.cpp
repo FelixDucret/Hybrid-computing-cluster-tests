@@ -65,22 +65,27 @@ static struct argp argp = { options, parse_option, args_doc, doc };
 //}argp
 
 
-
-vector<int> sum_vectors(vector<int> vec1, vector<int> vec2)
- {
-	vector<int> sum;
-	if(vec1.size()!=vec2.size())
+//Template for vectors sumation
+template <typename T>
+vector<T> add(const vector<T> &a, const vector<T> &b, vector<T> &c)
+{
+	vector<T> sum;
+        if(a.size()!=b.size()||b.size()!=c.size())
+        {
+              cout << "Vectors can't be sumed : different lengths" << endl;
+              return sum;
+        }
+	else
 	{
-		cout << "Vectors can't be sumed : different lengths" << endl;
-		return sum;
-	}	
-	for(int i=0; i<vec1.size(); ++i)
- 	{
-		sum.push_back(vec1[i]+vec2[i]);
- 	}
+		for(int i=0; i<a.size(); ++i)
+        	{
+                	sum.push_back(a[i]+b[i]+c[i]);
+        	}
+	}
 	return sum;
-}
- 
+	
+}//template
+
 
 int main(int argc, char ** argv)
 {
@@ -97,12 +102,15 @@ int main(int argc, char ** argv)
 
         int L=arguments.size;
         //cout << "L : " << L << endl;
-        vector<int> vec1(5,2);
-        vector<int> vec2(5,3);
 
-        vector<int> S=sum_vectors(vec1,vec2);
+	//ints
+        vector<int> veci1(5,2);
+        vector<int> veci2(5,3);
+	vector<int> veci3(5,4);
+
+        vector<int> Si=add(veci1,veci2,veci3);
         
-        if(L>vec1.size())
+        if(L>veci1.size())
         {
         	cout << "Vectors too short, last elements are not defined" << endl;
         }//if
@@ -112,17 +120,48 @@ int main(int argc, char ** argv)
         	{
         	  	for(int i=0; i<L; i++)
         	    {	
-        	      	cout << S[i] << endl;
+        	      	cout << Si[i] << endl;
         	    }//for
         	}//if
         	else
         	{
-        	   	for(int i=0; i<S.size(); i++)
+        	   	for(int i=0; i<Si.size(); i++)
         	   	{	
-        	   		cout << S[i] << endl;
+        	   		cout << Si[i] << endl;
         	    }//for
         	}//else2
         }//else1
+
+	
+	//floats
+	vector<float> vecf1(5,2.3);
+        vector<float> vecf2(5,3.4);
+        vector<float> vecf3(5,4.5);
+
+        vector<float> Sf=add(vecf1,vecf2,vecf3);
+	
+        if(L>vecf1.size())
+        {
+                cout << "Vectors too short, last elements are not defined" << endl;
+        }//if
+	else
+	{
+                if(L!=0)
+                {
+                        for(int i=0; i<L; i++)
+                    {
+                     	cout << Sf[i] << endl;
+                    }//for
+                }//if
+                else
+                {
+                        for(int i=0; i<Sf.size(); i++)
+                        {
+                                cout << Sf[i] << endl;
+                    }//for
+                }//else2
+        }//else1
+
 
         return 0;
 
