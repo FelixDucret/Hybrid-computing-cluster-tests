@@ -2,6 +2,7 @@
 #include <vector>
 #include <error.h>
 #include <argp.h>
+#include <cstdlib>
 
 using namespace std;
 
@@ -43,10 +44,8 @@ static error_t parse_option(int key, char *arg, struct argp_state *state)
   switch (key)
   {
     case 'l':
-    	int j;
-    	sscanf(arg.c_str(), "%d", &j);
-    	arguments->size=j;
-      break;
+    	arguments->size=atoi(arg);
+    	break;
     default:
       return ARGP_ERR_UNKNOWN;
   }//switch
@@ -56,9 +55,8 @@ static error_t parse_option(int key, char *arg, struct argp_state *state)
 
 void print_args(struct arguments *p_arguments)
 {
-   printf (".size=%d\n"
-  , p_arguments->size
-  );
+   cout << "Size = " << p_arguments->size << endl << endl << endl;
+  ;
 }//print_args
 
 //! [argp] setup argp parser
@@ -74,7 +72,7 @@ vector<int> sum_vectors(vector<int> vec1, vector<int> vec2)
 	if(vec1.size()!=vec2.size())
 	{
 		cout << "Vectors can't be sumed : different lengths" << endl;
-		return  sum;
+		return sum;
 	}	
 	for(int i=0; i<vec1.size(); ++i)
  	{
@@ -84,34 +82,47 @@ vector<int> sum_vectors(vector<int> vec1, vector<int> vec2)
 }
  
 
-int main(void)
+int main(int argc, char ** argv)
 {
         //CLI arguments
         struct arguments arguments;
-        arguments.size=10;
+        arguments.size=20;
 
-        printf("command line option values:\n");
+        cout << "command line option values:" << endl;
         print_args(&arguments);
+        
+        //! - Parse arguments (see parse_option) and eventually show$
+        argp_parse(&argp, argc, argv, 0, 0, &arguments);
+
 
         int L=arguments.size;
-        vector<int> vec1(4,2);
+        vector<int> vec1(5,2);
         vector<int> vec2(5,3);
 
         vector<int> S=sum_vectors(vec1,vec2);
         
-        if(L!=0)
+        if(L>vec1.size())
         {
-        	for(int i=0; i<L; i++)
-        	        {	
-        	        	cout << S[i] << endl;
+        	cout << "Vectors too short, last elements are not defined" << endl;
+        }
+        else
+        {
+        	if(L!=0)
+        	        {
+        	        	for(int i=0; i<L; i++)
+        	        	        {	
+        	        	        	cout << S[i] << endl;
+        	        	        }
+        	        }
+        	        else
+        	        {
+        	        	for(int i=0; i<S.size(); i++)
+        	        	{	
+        	        	    	cout << S[i] << endl;
+        	        	}
         	        }
         }
-        else{
-        	for(int i=0; i<S.size(); i++)
-        	{	
-        	    	cout << S[i] << endl;
-        	}
-        }
+        
         
 
         return 0;
