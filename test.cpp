@@ -105,26 +105,24 @@ int main(int argc, char ** argv)
         if(L>vec1.size())
         {
         	cout << "Vectors too short, last elements are not defined" << endl;
-        }
+        }//if
         else
         {
         	if(L!=0)
-        	        {
-        	        	for(int i=0; i<L; i++)
-        	        	        {	
-        	        	        	cout << S[i] << endl;
-        	        	        }
-        	        }
-        	        else
-        	        {
-        	        	for(int i=0; i<S.size(); i++)
-        	        	{	
-        	        	    	cout << S[i] << endl;
-        	        	}
-        	        }
-        }
-        
-        
+        	{
+        	  	for(int i=0; i<L; i++)
+        	    {	
+        	      	cout << S[i] << endl;
+        	    }//for
+        	}//if
+        	else
+        	{
+        	   	for(int i=0; i<S.size(); i++)
+        	   	{	
+        	   		cout << S[i] << endl;
+        	    }//for
+        	}//else2
+        }//else1
 
         return 0;
 
