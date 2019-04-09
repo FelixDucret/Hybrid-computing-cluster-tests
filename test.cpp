@@ -1,29 +1,14 @@
+#include <boost/lambda/lambda.hpp>
 #include <iostream>
-#include <vector>
-#include <cstdlib>
+#include <iterator>
+#include <algorithm>
 
-using namespace std;
-namespace po = boost::program_options;
+int main()
+{
+    using namespace boost::lambda;
+    typedef std::istream_iterator<int> in;
 
-// Declare the supported options.
-po::options_description desc("Allowed options");
-desc.add_options()
-    ("help", "produce help message")
-    ("compression", po::value<int>(), "set compression level")
-;
-
-po::variables_map vm;
-po::store(po::parse_command_line(ac, av, desc), vm);
-po::notify(vm);    
-
-if (vm.count("help")) {
-    cout << desc << "\n";
-    return 1;
+    std::for_each(
+        in(std::cin), in(), std::cout << (_1 * 3) << " " );
 }
 
-if (vm.count("compression")) {
-    cout << "Compression level was set to " 
- << vm["compression"].as<int>() << ".\n";
-} else {
-    cout << "Compression level was not set.\n";
-}

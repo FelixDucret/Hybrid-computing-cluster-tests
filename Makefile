@@ -1,2 +1,2 @@
 all :
-	g++ test.cpp -o test
+	c++ -I /usr/lib64 test.cpp -o test
