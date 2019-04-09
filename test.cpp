@@ -11,4 +11,3 @@ int main()
     std::for_each(
         in(std::cin), in(), std::cout << (_1 * 3) << " " );
 }
-
