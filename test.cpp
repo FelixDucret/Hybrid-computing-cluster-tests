@@ -2,16 +2,26 @@
 #include <iostream>
 #include <iterator>
 
-int prog_options(int ac, char* av[])
+struct ret{
+	bool e;	//Error bool
+	int l;	//Used to return the length in the main function
+};
+
+ret prog_options(int ac, char* av[])
 {
 	namespace po = boost::program_options;
+	
+	ret result;
+	//Error bool
+	result.e = 0;
+	result.l=0;
 
 	// Declare the supported options.
 
 	po::options_description desc("Allowed options");
 	desc.add_options()
     		("help", "produce help message")
-//    		("length,l", po::value<int>(), "choose the length of vectors you want to sum")
+    		("length", po::value<int>(), "choose the length of vectors you want to sum")
 	;
 //	po::positional_options_description p;
 
@@ -26,24 +36,28 @@ int prog_options(int ac, char* av[])
 
 	if (vm.count("help")) {
     		std::cout << desc << "\n";
-    		return 1;
+    		result.e = 1;
 	}
 
-	if (vm.count("compression")) {
-    		std::cout << "Compression level was set to " 
- 		<< vm["compression"].as<int>() << ".\n";
+	else if (vm.count("length")) {
+    		std::cout << "You chose to sum the " 
+ 		<< vm["length"].as<int>() << " first terms of the vectors.\n";
+		result.l=vm["length"].as<int>();
+
 	} else {
-    		std::cout << "Compression level was not set.\n";
+    		std::cout << "You chose to sum all the terms of the vectors.\n";
 	}
 	
-	return 0;
+	
+	return result;
 }
 
 int main(int ac, char* av[])
 {
-	int r=prog_options(ac, av);
+	ret s=prog_options(ac, av);
+	
 	
 
-	return r;
+	return s.e;
 
 }//main
