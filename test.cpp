@@ -24,16 +24,11 @@ ret prog_options(int ac, char* av[])
 	po::options_description desc("Allowed options");
 	desc.add_options()
     		("help", "produce help message")
-    		("length", po::value<int>(), "choose the length of vectors you want to sum")
+    		("length,l", po::value<int>(), "choose the length of vectors you want to sum")
 	;
-//	po::positional_options_description p;
-
-//	p.add("length", -l);
 
 	po::variables_map vm;
 	po::store(po::parse_command_line(ac, av, desc), vm);
-		 // options(desc).positional(p).run()
-
 
 	po::notify(vm);    
 
