@@ -1,1 +1,19 @@
 To execute the executable file, please type "./test".
+
+Boost configuration:
+
+To compile boost program using the library Boost.program_options,
+first download the boost library and follow the steps indicated on
+this page : 
+https://www.boost.org/doc/libs/1_69_0/more/getting_started/unix-variants.html
+(you may replace the 1_69_0 if you have another version of the boost 
+library)
+
+You have to edit the makefile to make it work. The syntax of the makefile for
+the program options library is:
+
+all:
+	c++ -I "path to the boost_1_69_0 unzipped file" test.cpp -o test \
+	-L"path to your library files (.so or .a, check your /usr/include or
+	/usr/lib files)" -lboost_program_options-mt
+
