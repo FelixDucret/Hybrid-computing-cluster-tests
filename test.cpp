@@ -2,6 +2,10 @@
 #include <iostream>
 #include <iterator>
 #include <vector>
+#include <fstream>
+#include <string>
+#include <stdlib.h>
+
 
 using namespace std;
 
@@ -83,28 +87,49 @@ ret prog_options(int ac, char* av[])
 *	@param a	First vector to be sumed
 *	@param b	Second vector to be sumed
 *	@param c	Third vector to be sumed
-*	@param l	Int equal to the number of terms we'll calculate
 *	@return		Sum of the 3 vectors
 *       @date 4/11/2019
 */
 template <typename T>
-vector<T> add(const vector<T> &a, const vector<T> &b, vector<T> &c, int l)
+vector<T> add(const vector<T> &a, const vector<T> &b, vector<T> &c)
 {
 	vector<T> sum;		/*Vector that will memorize the sum of the vectors */
-        // Vectors can't be sumed if they have different lengths 
-	if(a.size()!=b.size()||b.size()!=c.size())
-        {
-              cout << "Vectors can't be sumed : different lengths" << endl;	// An error message is prompted
-              return sum;		// The calculation stops here
-        }
-	else
- 	{
-		for(int i=0; i<a.size(); ++i)
-        	{
-                	sum.push_back(a[i]+b[i]+c[i]);		// The terms of the vectors are sumed according to their index
-        	}
-	}
+	for(int i=0; i<a.size(); ++i)
+   	{
+       	sum.push_back(a[i]+b[i]+c[i]);		// The terms of the vectors are sumed according to their index
+   	}
+
  	return sum;
+}
+
+vector<double> vector_file(string addr, int l)
+{
+	ifstream File(addr.c_str());
+	vector<double> vect;
+	if(File)
+	{
+		string number;
+		if(l!=0)
+		{
+			for(int j=0; j<l; j++)
+			{
+				File >> number;
+				vect.push_back(atof(number.c_str()));
+			}
+		}
+		else
+		{
+			while(getline(File, number))
+			{
+				vect.push_back(atof(number.c_str()));
+			}
+		}
+	}
+	else
+	{
+		cout << "ERROR : The file can't be read" << endl;
+	}
+	return vect;
 }
 
 /**
@@ -120,38 +145,34 @@ int main(int ac, char* av[])
 {
 	ret s=prog_options(ac, av);	/*Call to the function that will parse the options input by the user */
 
-	vector<int>vec1 (50,2);	/*The vectors that will be sumed */
-	vector<int>vec2 (50,3);  
-	vector<int>vec3 (50,4);  
-	
 	// If calulation is requested
 	if(s.e==0)
 	{	
+		string addr1="numbers1.txt";
+		string addr2="numbers2.txt";
+		string addr3="numbers3.txt";
+
+		vector<double> vec1=vector_file(addr1, 0);	
+
 		// If the user asks for more terms than there are in the vectors, prompt of an error message
 		if(s.l>vec1.size())
         	{
                 	cout << "Vectors too short, last elements are not defined" << endl;
-        	}//if
+			s.l=0;
+        	}//if	
+		
 
 		else
 		{	
-			//Length argument taken into account : l first terms of the sum will be prompted 
-			if(s.l!=0)
-        		{
-        			for(int i=0; i<s.l; i++)
-        	        		{	
-						vector<int> S = add(vec1,vec2,vec3,s.l);	/*Call to the sumation function */
-        	        			cout << S[i] << endl;
-        	        		}//for
-        		}//if
-			// If no length argument : all the terms of the sum are prompted
-        		else{
-        			for(int i=0; i<vec1.size(); i++)
-        			{	
-					vector<int> S = add(vec1,vec2,vec3,vec1.size());	/*Call to the sumation function */
-        	    			cout << S[i] << endl;
-        			}//for
-        		}//else2
+			vector<double> vec1=vector_file(addr1, s.l);	/*First vector that will be sumed */
+			vector<double> vec2=vector_file(addr2, s.l);	/*Second vector that will be sumed */
+			vector<double> vec3=vector_file(addr3, s.l);	/*Third vector that will be sumed */
+
+			vector<double> S=add(vec1, vec2, vec3);
+			for(int i=0; i<vec1.size(); i++)
+			{
+				cout << S[i] << endl;
+			}
 		}//else1
 	}//if
 	return 0;
