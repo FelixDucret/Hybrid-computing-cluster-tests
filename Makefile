@@ -1,6 +1,6 @@
 OS := $(shell uname)
 OPTIONS:= 
-
+ 
 ifeq ($(OS),Darwin)
 	OPTIONS += -framework OpenCL
 else
