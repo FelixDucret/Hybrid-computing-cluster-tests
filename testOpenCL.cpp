@@ -100,7 +100,7 @@ cl::CommandQueue queue(context, devices[0], 0, &err);
          cl::NDRange(1, 1), 
         NULL, 
         &event);
-    checkErr(err, "ComamndQueue::enqueueNDRangeKernel()");
+    checkErr(err, "CommandQueue::enqueueNDRangeKernel()");
 
 
 event.wait();    
@@ -110,7 +110,7 @@ event.wait();
         0,
         hw.length()+1,
         outH);
-    checkErr(err, "ComamndQueue::enqueueReadBuffer()");
+    checkErr(err, "CommandQueue::enqueueReadBuffer()");
     std::cout << outH;
 
 
