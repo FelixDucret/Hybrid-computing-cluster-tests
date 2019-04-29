@@ -34,7 +34,7 @@ int main(void)
     cl::Platform::get(&platformList);
     checkErr(platformList.size()!=0 ? CL_SUCCESS : -1, "cl::Platform::get");
     std::cerr << "Platform number is: " << platformList.size() << std::endl;
-    
+
     std::string platformVendor;
     platformList[0].getInfo((cl_platform_info)CL_PLATFORM_VENDOR, &platformVendor);
     std::cerr << "Platform is by: " << platformVendor << "\n";
@@ -42,19 +42,19 @@ int main(void)
         {CL_CONTEXT_PLATFORM, (cl_context_properties)(platformList[0])(), 0};
 
     cl::Context context(
-       CL_DEVICE_TYPE_GPU, 
+       CL_DEVICE_TYPE_GPU,
        cprops,
        NULL,
        NULL,
        &err);
-    checkErr(err, "Context::Context()");            
+    checkErr(err, "Context::Context()");
 
 
-char * outH = new char[hw.length()+1];
+char * outH = new char[hw.length()];
 cl::Buffer outCL(
     context,
     CL_MEM_WRITE_ONLY | CL_MEM_USE_HOST_PTR,
-    hw.length()+1,
+    hw.length(),
     outH,
     &err);
     checkErr(err, "Buffer::Buffer()");
@@ -96,8 +96,8 @@ cl::CommandQueue queue(context, devices[0], 0, &err);
     err = queue.enqueueNDRangeKernel(
         kernel, 
         cl::NullRange,
-        cl::NDRange(hw.length()+1),
-         cl::NDRange(1, 1), 
+        cl::NDRange(hw.length()),
+         cl::NDRange(1), 
         NULL, 
         &event);
     checkErr(err, "CommandQueue::enqueueNDRangeKernel()");
@@ -108,7 +108,7 @@ event.wait();
         outCL,
         CL_TRUE,
         0,
-        hw.length()+1,
+        hw.length(),
         outH);
     checkErr(err, "CommandQueue::enqueueReadBuffer()");
     std::cout << outH;
