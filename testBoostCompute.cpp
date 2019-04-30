@@ -4,8 +4,12 @@
 #include <boost/compute.hpp>
 #include <boost/program_options.hpp>
 
+
 namespace compute = boost::compute;
 namespace po = boost::program_options;
+using compute::lambda::_1;
+using compute::lambda::_2;
+using compute::lambda::_3;
 
 int prog_options(int ac, char* av[])
 {
@@ -39,7 +43,7 @@ int main(int ac, char* av[])
     int VECTOR_SIZE = prog_options(ac, av);	//Maximum size (for now) : 182580000
 						//Best average time/number of values : 10 000 000 (1.5s)
     //tests on VECTOR_SIZE to see it has a right value
-    while (VECTOR_SIZE<0) || VECTOR_SIZE>182580000)
+    while (VECTOR_SIZE<0 || VECTOR_SIZE>182580000)
     {
 	std::cout << "Please enter a valid value (cannot be superior to 182580000) : " << std::endl;
 	std::cin >> VECTOR_SIZE;
@@ -83,6 +87,7 @@ int main(int ac, char* av[])
 
     boost::compute::transform(device_vector1.begin(), device_vector1.end(), device_vector2.begin(), device_vector3.begin(), compute::plus<int>(), queue);
 
+
     // copy data back to the host
     compute::copy(
         device_vector3.begin(), device_vector3.end(), host_vector3.begin(), queue
@@ -95,7 +100,7 @@ int main(int ac, char* av[])
 	{
 		++err;
 	}
-	//std::cout << host_vector2[i] << std::endl;
+	//std::cout << host_vector3[i] << std::endl;
     }
     std::cout << "Errors : " << err << "/" << host_vector2.size() << std::endl;
     return 0;
