@@ -36,12 +36,12 @@ int prog_options(int ac, char* av[])
 
 int main(int ac, char* av[])
 {
-    int VECTOR_SIZE = prog_options(ac, av);	//Maximum size (for now) : 16384
-
+    int VECTOR_SIZE = prog_options(ac, av);	//Maximum size (for now) : 182580000
+						//Best average time/number of values : 10 000 000 (1.5s)
     //tests on VECTOR_SIZE to see it has a right value
-    while (VECTOR_SIZE<0 || VECTOR_SIZE>16384)
+    while (VECTOR_SIZE<0) || VECTOR_SIZE>182580000)
     {
-	std::cout << "Please enter a valid value (cannot be superior to 16384) : " << std::endl;
+	std::cout << "Please enter a valid value (cannot be superior to 182580000) : " << std::endl;
 	std::cin >> VECTOR_SIZE;
     }
 
@@ -58,42 +58,40 @@ int main(int ac, char* av[])
     // generate two int vectors
     std::vector<int> host_vector1(VECTOR_SIZE);
     std::vector<int> host_vector2(VECTOR_SIZE);
+    std::vector<int> host_vector3(VECTOR_SIZE);
     for(unsigned int i=0; i<host_vector1.size(); ++i)
     {
 	host_vector1[i]=i;
-        //host_vector2[i]=VECTOR_SIZE-i;
+        host_vector2[i]=VECTOR_SIZE-i;
     }
 
     // create vectors on the device
     compute::vector<int> device_vector1(VECTOR_SIZE, ctx);
     compute::vector<int> device_vector2(VECTOR_SIZE, ctx);
+    compute::vector<int> device_vector3(VECTOR_SIZE, ctx);
+
 
     // copy data to the device
     compute::copy(
         host_vector1.begin(), host_vector1.end(), device_vector1.begin(), queue
     );
-   /* compute::copy(
+    compute::copy(
         host_vector2.begin(), host_vector2.end(), device_vector2.begin(), queue
-    );*/
+    );
     
+    //Add vectors
 
-    // Adds four to vector
-    BOOST_COMPUTE_FUNCTION(int, add_four, (int x),
-    {
-	return x+4;
-    });
-
-    boost::compute::transform(device_vector1.begin(), device_vector1.end(), device_vector2.begin(), add_four, queue);
+    boost::compute::transform(device_vector1.begin(), device_vector1.end(), device_vector2.begin(), device_vector3.begin(), compute::plus<int>(), queue);
 
     // copy data back to the host
     compute::copy(
-        device_vector2.begin(), device_vector2.end(), host_vector2.begin(), queue
+        device_vector3.begin(), device_vector3.end(), host_vector3.begin(), queue
     );
     int err = 0;
     //std::cout << "Values : " << std::endl;
     for(unsigned int i=0; i<host_vector2.size(); ++i)
     {
-	if(host_vector2[i]!=host_vector1[i]+4)
+	if(host_vector3[i]!=host_vector1[i]+host_vector2[i])
 	{
 		++err;
 	}
