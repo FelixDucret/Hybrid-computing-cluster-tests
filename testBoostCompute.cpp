@@ -55,34 +55,50 @@ int main(int ac, char* av[])
     compute::context ctx(gpu);
     compute::command_queue queue(ctx, gpu);
 
-    // generate random numbers on the host
-    std::vector<float> host_vector(VECTOR_SIZE);
-    std::generate(host_vector.begin(), host_vector.end(), rand);
+    // generate two int vectors
+    std::vector<int> host_vector1(VECTOR_SIZE);
+    std::vector<int> host_vector2(VECTOR_SIZE);
+    for(unsigned int i=0; i<host_vector1.size(); ++i)
+    {
+	host_vector1[i]=i;
+        //host_vector2[i]=VECTOR_SIZE-i;
+    }
 
-    // create vector on the device
-    compute::vector<float> device_vector(VECTOR_SIZE, ctx);
+    // create vectors on the device
+    compute::vector<int> device_vector1(VECTOR_SIZE, ctx);
+    compute::vector<int> device_vector2(VECTOR_SIZE, ctx);
 
     // copy data to the device
     compute::copy(
-        host_vector.begin(), host_vector.end(), device_vector.begin(), queue
+        host_vector1.begin(), host_vector1.end(), device_vector1.begin(), queue
     );
+   /* compute::copy(
+        host_vector2.begin(), host_vector2.end(), device_vector2.begin(), queue
+    );*/
+    
 
-    // sort data on the device
-    compute::sort(
-        device_vector.begin(), device_vector.end(), queue
-    );
+    // Adds four to vector
+    BOOST_COMPUTE_FUNCTION(int, add_four, (int x),
+    {
+	return x+4;
+    });
+
+    boost::compute::transform(device_vector1.begin(), device_vector1.end(), device_vector2.begin(), add_four, queue);
 
     // copy data back to the host
     compute::copy(
-        device_vector.begin(), device_vector.end(), host_vector.begin(), queue
+        device_vector2.begin(), device_vector2.end(), host_vector2.begin(), queue
     );
     int err = 0;
-    for(int i=0; i<host_vector.size()-1; ++i)
+    //std::cout << "Values : " << std::endl;
+    for(unsigned int i=0; i<host_vector2.size(); ++i)
     {
-	if(host_vector[i]>host_vector[i+1])
+	if(host_vector2[i]!=host_vector1[i]+4)
+	{
 		++err;
+	}
+	//std::cout << host_vector2[i] << std::endl;
     }
-    std::cout << "Errors : " << err << std::endl;
-
+    std::cout << "Errors : " << err << "/" << host_vector2.size() << std::endl;
     return 0;
 }
