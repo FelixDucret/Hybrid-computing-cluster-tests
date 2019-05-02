@@ -7,9 +7,6 @@
 
 namespace compute = boost::compute;
 namespace po = boost::program_options;
-using compute::lambda::_1;
-using compute::lambda::_2;
-using compute::lambda::_3;
 
 int prog_options(int ac, char* av[])
 {
@@ -82,12 +79,19 @@ int main(int ac, char* av[])
     compute::copy(
         host_vector2.begin(), host_vector2.end(), device_vector2.begin(), queue
     );
-    
+
     //Add vectors
 
-    boost::compute::transform(device_vector1.begin(), device_vector1.end(), device_vector2.begin(), device_vector3.begin(), compute::plus<int>(), queue);
+    //boost::compute::transform(device_vector1.begin(), device_vector1.end(), device_vector2.begin(), device_vector3.begin(), compute::plus<int>(), queue);
 
+    using compute::lambda::_1;
+    using compute::lambda::_2;
 
+    boost::compute::transform(device_vector1.begin(), device_vector1.end(), device_vector2.begin(), device_vector3.begin(),
+       _1+_2 , queue);
+    // c[id]=a[id]+b[id]; //kernel
+    // return a+b         //BOOST_COMPUTE_FUNCTION
+	
     // copy data back to the host
     compute::copy(
         device_vector3.begin(), device_vector3.end(), host_vector3.begin(), queue
