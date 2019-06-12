@@ -1,0 +1,4 @@
+Command line to launch the receiver:
+
+./UDP "address of the port linked to the connection you want to use" "a random address between 224.0.0.0 and 239.255.255.255"
+
