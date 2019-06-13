@@ -1,20 +1,22 @@
 #include <iostream>
+#include <iterator>
+#include <fstream>
 #include <sstream>
 #include <string>
-#include <boost/asio.hpp>
 #include <vector>
+#include <boost/asio.hpp>
 #include "boost/bind.hpp"
 #include "boost/date_time/posix_time/posix_time_types.hpp"
 
 const short multicast_port = 30001;
-const int max_message_count = 10;
+const int max_message_count = 26;
 
 class sender
 {
 public:
   sender(boost::asio::io_service& io_service,
       const boost::asio::ip::address& multicast_address,
-      std::vector<int> vector_data)
+      std::vector<char> vector_data)
     : endpoint_(multicast_address, multicast_port),
       socket_(io_service, endpoint_.protocol()),
       timer_(io_service),
@@ -87,7 +89,7 @@ private:
   boost::asio::deadline_timer timer_;
   int message_count_;
   std::string message_;
-  std::vector<int> data_;
+  std::vector<char> data_;
 };
 
 int main(int argc, char* argv[])
@@ -105,10 +107,25 @@ int main(int argc, char* argv[])
     }
 
     boost::asio::io_service io_service;
-    std::vector<int> A(max_message_count);
+/*    std::vector<int> A(max_message_count);
     for(int i=0; i<max_message_count; ++i)
     {
     	  A[i]=i;
+    }*/
+
+    std::string const nameFile("Alphabet");
+    std::ifstream stream(nameFile.c_str());
+    std::vector<char> A;
+
+    if(stream)
+    {
+	std::copy(std::istream_iterator<char>(stream),
+             std::istream_iterator<char>(),
+             std::back_inserter(A));
+    }
+    else
+    {
+        std::cerr << "Can't open" << nameFile << "file !" << std::endl;
     }
     sender s(io_service, boost::asio::ip::address::from_string(argv[1]), A);
     io_service.run();
