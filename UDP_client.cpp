@@ -9,11 +9,14 @@
 //
 
 #include <iostream>
+#include <fstream>
 #include <string>
+#include <vector>
 #include <boost/asio.hpp>
 #include "boost/bind.hpp"
 
 const short multicast_port = 30001;
+const int max_length = 1024;
 
 class receiver
 {
@@ -21,7 +24,7 @@ public:
   receiver(boost::asio::io_service& io_service,
       const boost::asio::ip::address& listen_address,
       const boost::asio::ip::address& multicast_address)
-    : socket_(io_service)
+    : socket_(io_service), data_(max_length)
   {
     // Create the socket so that multiple may be bound to the same address.
     boost::asio::ip::udp::endpoint listen_endpoint(
@@ -39,14 +42,24 @@ public:
         boost::bind(&receiver::handle_receive_from, this,
           boost::asio::placeholders::error,
           boost::asio::placeholders::bytes_transferred));
-  }
+  }//Constructor
 
   void handle_receive_from(const boost::system::error_code& error,
       size_t bytes_recvd)
   {
     if (!error)
     {
-      std::cout.write(data_, bytes_recvd);
+      std::cout << data_.data();
+      const std::string nameFile("Results");
+      std::ofstream stream(nameFile.c_str());
+      if(stream)
+      {
+          std::copy(data_.begin(), data_.end(), std::ostream_iterator<char>(stream));
+      }//if2
+      else
+      {
+          std::cerr << "Can't write in " << nameFile << " file !" << std::endl;
+      }//else2
       std::cout << std::endl;
 
       socket_.async_receive_from(
@@ -54,15 +67,15 @@ public:
           boost::bind(&receiver::handle_receive_from, this,
             boost::asio::placeholders::error,
             boost::asio::placeholders::bytes_transferred));
-    }
-  }
+    }//if1
+  }//handle_receive_from
 
 private:
   boost::asio::ip::udp::socket socket_;
   boost::asio::ip::udp::endpoint sender_endpoint_;
-  enum { max_length = 1024 };
-  char data_[max_length];
-};
+  std::vector<char> data_;
+
+};//class
 
 int main(int argc, char* argv[])
 {
@@ -76,18 +89,19 @@ int main(int argc, char* argv[])
       std::cerr << "  For IPv6, try:\n";
       std::cerr << "    receiver 0::0 ff31::8000:1234\n";
       return 1;
-    }
+    }//if1
 
     boost::asio::io_service io_service;
     receiver r(io_service,
         boost::asio::ip::address::from_string(argv[1]),
         boost::asio::ip::address::from_string(argv[2]));
     io_service.run();
-  }
+  }//try1
   catch (std::exception& e)
   {
     std::cerr << "Exception: " << e.what() << "\n";
-  }
+  }//catch
 
   return 0;
-}
+}//main
+
