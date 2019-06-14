@@ -17,6 +17,9 @@
 
 const short multicast_port = 30001;
 const int max_length = 1024;
+const std::string nameFile("Results");
+std::ofstream stream(nameFile.c_str());
+
 
 class receiver
 {
@@ -50,11 +53,10 @@ public:
     if (!error)
     {
       std::cout << data_.data();
-      const std::string nameFile("Results");
-      std::ofstream stream(nameFile.c_str());
       if(stream)
       {
           std::copy(data_.begin(), data_.end(), std::ostream_iterator<char>(stream));
+          stream << std::endl;
       }//if2
       else
       {
