@@ -1,25 +1,18 @@
-//
-// receiver.cpp
-// ~~~~~~~~~~~~
-//
-// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-//
-
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <vector>
 #include <boost/asio.hpp>
+#include <boost/date_time.hpp>
 #include "boost/bind.hpp"
 
+boost::asio::io_service io_service;
+boost::posix_time::ptime t1;
 const short multicast_port = 30001;
 const int max_length = 1024;
 const std::string nameFile("Results");
 std::ofstream stream(nameFile.c_str());
-
+bool stop = 0;
 
 class receiver
 {
@@ -52,23 +45,39 @@ public:
   {
     if (!error)
     {
-      std::cout << data_.data();
-      if(stream)
+      if(bytes_recvd!=0)
       {
-          std::copy(data_.begin(), data_.end(), std::ostream_iterator<char>(stream));
-          stream << std::endl;
-      }//if2
-      else
-      {
-          std::cerr << "Can't write in " << nameFile << " file !" << std::endl;
-      }//else2
-      std::cout << std::endl;
+        t1 = boost::posix_time::second_clock::local_time();
+        for(int i=0; i<(static_cast<int>(bytes_recvd)); ++i)
+        {
+          std::cout << data_[i];
+        }
+        if(stream)
+        {
+            std::copy(data_.begin(), data_.end(), std::ostream_iterator<char>(stream));
+            stream << std::endl;
+            for(int i=0; i<data_.size(); ++i)
+            {
+              if(data_[i]=='#')
+              {
+                stop = 1;
+                //std::cout << "Found end of UDP flux";
+                io_service.stop();
+              }
+            }
+        }//if2
+        else
+        {
+            std::cerr << "Can't write in " << nameFile << " file !" << std::endl;
+        }//else2
+        std::cout << std::endl;
 
-      socket_.async_receive_from(
-          boost::asio::buffer(data_, max_length), sender_endpoint_,
-          boost::bind(&receiver::handle_receive_from, this,
-            boost::asio::placeholders::error,
-            boost::asio::placeholders::bytes_transferred));
+        socket_.async_receive_from(
+            boost::asio::buffer(data_, max_length), sender_endpoint_,
+            boost::bind(&receiver::handle_receive_from, this,
+              boost::asio::placeholders::error,
+              boost::asio::placeholders::bytes_transferred));
+      }
     }//if1
   }//handle_receive_from
 
@@ -92,12 +101,13 @@ int main(int argc, char* argv[])
       std::cerr << "    receiver 0::0 ff31::8000:1234\n";
       return 1;
     }//if1
-
-    boost::asio::io_service io_service;
     receiver r(io_service,
         boost::asio::ip::address::from_string(argv[1]),
         boost::asio::ip::address::from_string(argv[2]));
     io_service.run();
+    boost::posix_time::ptime t2 = boost::posix_time::second_clock::local_time();
+    boost::posix_time::time_duration diff = t2 - t1;
+    std::cout << diff.total_milliseconds() << std::endl;
   }//try1
   catch (std::exception& e)
   {
