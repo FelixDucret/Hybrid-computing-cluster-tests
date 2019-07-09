@@ -4,6 +4,8 @@ spin=$1
 file0=table_s.txt
 file1=table_pr.txt
 file2=table_r.txt
+mini_err=$(expr $num_samples - $2 \* $num_samples / 100)
+
 
 #clean
 rm -fr ./tables/*
@@ -16,7 +18,7 @@ do
 	echo 0  > $file0
 	echo $num_samples > $file1
 	echo 0  > $file2
-	killall udp_server
+	killall udp_server &> /dev/null
 
 	#sample
 	#for buf_size in 1024 2048 4096 8192 16384 32768
@@ -28,14 +30,24 @@ do
         	packets_received=$(tail -c 33 temp | rev | cut -d'#' -f 1 | rev)
 		#packets_received=$(cat temp | rev | cut -d'#' -f 1 | rev)
 		killall udp_server
+		packets_received2=${packets_received//[$'\t\r\n ']}
+		echo packets_received
+		echo -ne $packets_received2
+		if [ "$packets_received2" -lt "$mini_err" ]
+		then
+			let rate=0
+		fi
         	echo $buf_size | tee -a $file0
-		echo $packets_received | tee -a $file1
-		cat $file1 | sed -i 's/\r//g' $file1
+		echo $packets_received2 | tee -a $file1
 		echo $wait
 		echo $rate | tee -a $file2
-		paste $file0 $file1 $file2 > $file
 	done
+paste $file0 $file1 $file2 > $file
+sed -i "s/$/\t$wait/" $file
+
 #clean
 rm $file0 $file1 $file2
 
 done
+
+cat ./tables/* > table.txt
